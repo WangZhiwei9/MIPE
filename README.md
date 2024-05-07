@@ -1,6 +1,7 @@
 # Improving Paratope and Epitope Prediction by Multi-Modal Contrastive Learning and Interaction Informativeness Estimation
 
 A Python module for paratope and epitope prediction
+![image](https://github.com/WangZhiwei9/MIPE/blob/main/Overview.jpg)
 
 ## Requirements
 
