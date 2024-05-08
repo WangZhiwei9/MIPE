@@ -9,7 +9,7 @@ This project relies on specific Python packages to ensure its proper functioning
 
 ## Data
 
-Input Files (pickle format). Can be downloaded from: https://drive.google.com/drive/folders/1bvGZQnOs6XOA17NsiaZ4eVjvn94SOM3u?usp=drive_link
+Dataset Files (pickle format) can be downloaded from: https://drive.google.com/drive/folders/1bvGZQnOs6XOA17NsiaZ4eVjvn94SOM3u?usp=drive_link
 
 
 ## Code
