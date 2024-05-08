@@ -9,11 +9,8 @@ This project relies on specific Python packages to ensure its proper functioning
 
 ## Data
 
-we compiled a dataset consisting of 626 binding antibody-antigen pairs, including their sequences, structures, and corresponding interaction maps.  All data is stored in the `alldata.pkl` file.
+Input Files (pickle format). Can be downloaded from: https://drive.google.com/drive/folders/1bvGZQnOs6XOA17NsiaZ4eVjvn94SOM3u?usp=drive_link
 
-#### Note
-
-Due to the large size of the `dataset.pkl` file, exceeding the 50MB size limit, it is not included in the current upload files. **Instead, only a subset of the data is provided as an example (`subdata.pkl`)**. Upon acceptance of the paper, we will upload the complete data file.
 
 ## Code
 
@@ -32,7 +29,8 @@ MIPE/
 │      └─check_point
 └─data/
 │  └─dataset/
-│      |─alldata.pkl
+│      |─cvdata.pkl
+│      |─testdata.pkl
 ├─requirements.txt
 └─README.md
 ```
