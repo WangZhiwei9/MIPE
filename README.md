@@ -34,3 +34,9 @@ MIPE/
 ├─requirements.txt
 └─README.md
 ```
+
+Training for the MIPE model with the dataset
+
+```
+python main.py
+```
