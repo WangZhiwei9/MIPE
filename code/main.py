@@ -7,11 +7,15 @@ from NTXentLoss import NTXentLoss
 from model import MIPE
 from utils import *
 
+
 if __name__ == '__main__':
-    file_name = "../data/dataset/alldata.pkl"
+    device = torch.device("cuda")
+    
+    file_name = "../data/dataset/cvdata.pkl"
     data_PECAN = pd.read_pickle(file_name)
     K = 5
     for kfold in range(K):
+        print(str(K)+":")
         train_data_PECAN, val_data_PECAN, test_data_PECAN = get_k_fold_data(K, kfold, data_PECAN)
         model = MIPE().to(device)
         loss_NTXent = NTXentLoss()
@@ -80,7 +84,8 @@ if __name__ == '__main__':
                 multimodal_loss_ag_inter = torch.div(torch.sum(cos_ag_pos), torch.sum(cos_ag))
                 multimodal_loss_ab_inter = torch.div(torch.sum(cos_ab_pos), torch.sum(cos_ab))
                 multimodal_loss = 0.06 * (multimodal_loss_ag_inter + multimodal_loss_ab_inter + multimodal_loss_ag_intra_seq + multimodal_loss_ag_intra_struc + multimodal_loss_ab_intra_seq + multimodal_loss_ab_intra_strc + loss_NTXent(outputs[4], outputs[8]) + loss_NTXent(outputs[6], outputs[9]))
-                result_loss = 5 * loss_BCE((outputs[0]).squeeze(dim=1), ag_targets) + 5 * loss_BCE((outputs[1]).squeeze(dim=1), ab_targets) + 1 * multimodal_loss + 10 * (loss_BCE(outputs[2], edge_label)) + 10 * (loss_BCE(outputs[3].t(), edge_label))
+                #result_loss = 5 * loss_BCE((outputs[0]).squeeze(dim=1), ag_targets) + 5 * loss_BCE((outputs[1]).squeeze(dim=1), ab_targets) + 1 * multimodal_loss + 10 * (loss_BCE(outputs[2], edge_label)) + 10 * (loss_BCE(outputs[3].t(), edge_label))
+                result_loss = 6 * loss_BCE((outputs[0]).squeeze(dim=1), ag_targets) + 6 * loss_BCE((outputs[1]).squeeze(dim=1), ab_targets) + 1 * multimodal_loss + 10 * (loss_BCE(outputs[2], edge_label)) + 10 * (loss_BCE(outputs[3].t(), edge_label))
                 if ((i) % 16 == 0):
                     result_loss_batch = result_loss
                 else:
@@ -111,12 +116,6 @@ if __name__ == '__main__':
                 # ab_train_recall = ab_train_recall_i + ab_train_recall
                 # ab_train_mcc = ab_train_mcc_i + ab_train_mcc
 
-                # del [outputs, ag_targets, ab_targets, train_auprc_i, train_auroc_i, train_precision_i,
-                #      train_recall_i,
-                #      train_mcc_i, ab_train_auprc_i, ab_train_auroc_i, ab_train_precision_i, ab_train_recall_i,
-                #      ab_train_mcc_i]
-
-            #
             model.eval()
             val_total_loss = 0
             val_total_loss_all = 0
@@ -191,7 +190,7 @@ if __name__ == '__main__':
                     multimodal_loss_ag_inter = torch.div(torch.sum(cos_ag_pos), torch.sum(cos_ag))
                     multimodal_loss_ab_inter = torch.div(torch.sum(cos_ab_pos), torch.sum(cos_ab))
                     multimodal_loss = 0.06 * (multimodal_loss_ag_inter + multimodal_loss_ab_inter + multimodal_loss_ag_intra_seq + multimodal_loss_ag_intra_struc + multimodal_loss_ab_intra_seq + multimodal_loss_ab_intra_strc + loss_NTXent(outputs[4], outputs[8]) + loss_NTXent(outputs[6], outputs[9]))
-                    val_result_loss = 5 * loss_BCE((outputs[0]).squeeze(dim=1), ag_targets) + 5 * loss_BCE((outputs[1]).squeeze(dim=1), ab_targets) + 1 * multimodal_loss + 10 * (loss_BCE(outputs[2], edge_label)) + 10 * (loss_BCE(outputs[3].t(), edge_label))
+                    val_result_loss = 6 * loss_BCE((outputs[0]).squeeze(dim=1), ag_targets) + 6 * loss_BCE((outputs[1]).squeeze(dim=1), ab_targets) + 1 * multimodal_loss + 10 * (loss_BCE(outputs[2], edge_label)) + 10 * (loss_BCE(outputs[3].t(), edge_label))
                     # loss
                     val_result_loss_j = float(val_result_loss.item())
                     val_total_loss_all = val_total_loss_all + val_result_loss_j
@@ -200,46 +199,21 @@ if __name__ == '__main__':
                     target_ag_val = ag_targets.long() if j == 0 else torch.cat((target_ag_val, ag_targets.long()), dim=0)
                     output_ab_val = torch.flatten(outputs[1]) if j == 0 else torch.cat((output_ab_val, torch.flatten(outputs[1])), dim=0)
                     target_ab_val = ab_targets.long() if j == 0 else torch.cat((target_ab_val, ab_targets.long()), dim=0)
-                    # # evalution
-                    # # ag
-                    # val_auprc_j, val_auroc_j, val_precision_j, val_recall_j, val_mcc_j = evalution_prot(
-                    #     torch.flatten(outputs[0]), ag_targets.long())
-                    # val_auprc = val_auprc_j + val_auprc
-                    # val_auroc = val_auroc_j + val_auroc
-                    # val_precision = val_precision_j + val_precision
-                    # val_recall = val_recall_j + val_recall
-                    # val_mcc = val_mcc_j + val_mcc
-                    # # ab
-                    # ab_val_auprc_j, ab_val_auroc_j, ab_val_precision_j, ab_val_recall_j, ab_val_mcc_j = evalution_prot(
-                    #     torch.flatten(outputs[1]), ab_targets.long())
-                    # ab_val_auprc = ab_val_auprc_j + ab_val_auprc
-                    # ab_val_auroc = ab_val_auroc_j + ab_val_auroc
-                    # ab_val_precision = ab_val_precision_j + ab_val_precision
-                    # ab_val_recall = ab_val_recall_j + ab_val_recall
-                    # ab_val_mcc = ab_val_mcc_j + ab_val_mcc
-                    #
-                    # del [outputs, ag_targets, ab_targets, val_auprc_j, val_auroc_j, val_precision_j, val_recall_j,
-                    #      val_mcc_j, ab_val_auprc_j, ab_val_auroc_j, ab_val_precision_j, ab_val_recall_j,
-                    #      ab_val_mcc_j, edge_label]
+
             if ((e + 1) % 10 == 0):
                 # evaluate
                 auprc_ag, auroc_ag, mcc_ag = evalution_prot(output_ag,target_ag)
                 auprc_ab, auroc_ab, mcc_ab = evalution_prot(output_ab,target_ab)
                 val_auprc_ag, val_auroc_ag, val_mcc_ag = evalution_prot(output_ag_val, target_ag_val)
                 val_auprc_ab, val_auroc_ab, val_mcc_ab = evalution_prot(output_ab_val,target_ab_val)
-                print("===============================")
-                print(val_auroc_ag)
-                print(val_auprc_ag)
-                print(val_mcc_ag)
-                print(val_auroc_ab)
-                print(val_auprc_ab)
-                print(val_mcc_ab)
+                print("=============="+str((e + 1))+"=================")
                 torch.save(model, "output_files/modelsave/model_k{}_{}".format(kfold, (e + 1)))
                 Loss_val.append(val_total_loss_all / len(val_data_PECAN))
                 AUROC_val.append(val_auroc / len(val_data_PECAN))
 
         # test
-        min_idx = Loss_val.index(min(Loss_val))
+        # min_idx = Loss_val.index(min(Loss_val))
+        min_idx = AUROC_val.index(min(AUROC_val))
         min_idx = (min_idx + 1) * 10
         model_filepath = "output_files/modelsave/model_k" + str(kfold) + "_" + str(min_idx)
         model = torch.load(model_filepath)
@@ -279,7 +253,7 @@ if __name__ == '__main__':
                     ab_node_attr = torch.unsqueeze(ab_node_attr, dim=0)
                     # Edge
                     ag_edge_ind, ab_edge_ind = CreateGearnetGraph(test_data_PECAN[j])
-                    agab = [ag_node_attr, ag_edge_ind, ab_node_attr, ab_edge_ind, True, ag_targets, ab_targets, j]
+                    agab = [ag_node_attr, ag_edge_ind, ab_node_attr, ab_edge_ind, ag_esm, ab_esm, True, ag_targets, ab_targets, j]
                     outputs = model(*agab)
                     # evalution
                     output_ag_test = torch.flatten(outputs[0]) if j == 0 else torch.cat((output_ag_test, torch.flatten(outputs[0])), dim=0)
@@ -288,30 +262,3 @@ if __name__ == '__main__':
                     target_ab_test = ab_targets.long() if j == 0 else torch.cat((target_ab_test, ab_targets.long()), dim=0)
                     test_auprc_ag, test_auroc_ag, test_mcc_ag = evalution_prot(output_ag_test, target_ag_test)
                     test_auprc_ab, test_auroc_ab, test_mcc_ab = evalution_prot(output_ab_test, target_ab_test)
-                    # test_auprc_j, test_auroc_j, test_precision_j, test_recall_j, test_mcc_j = evalution_prot(torch.flatten(outputs[0]), ag_targets.long())
-                    # test_auprc = test_auprc_j + test_auprc
-                    # test_auroc = test_auroc_j + test_auroc
-                    # test_precision = test_precision_j + test_precision
-                    # test_recall = test_recall_j + test_recall
-                    # test_mcc = test_mcc_j + test_mcc
-                    # ab_test_auprc_j, ab_test_auroc_j, ab_test_precision_j, ab_test_recall_j, ab_test_mcc_j = evalution_prot(torch.flatten(outputs[1]), ab_targets.long())
-                    # ab_test_auprc = ab_test_auprc_j + ab_test_auprc
-                    # ab_test_auroc = ab_test_auroc_j + ab_test_auroc
-                    # ab_test_precision = ab_test_precision_j + ab_test_precision
-                    # ab_test_recall = ab_test_recall_j + ab_test_recall
-                    # ab_test_mcc = ab_test_mcc_j + ab_test_mcc
-
-                # print("==========================================================================")
-                # print("Ag test AUROC:{}".format(test_auroc / len(test_data_PECAN)))
-                # print("Ag test AUPRC:{}".format(test_auprc / len(test_data_PECAN)))
-                # print("Ag test MCC:{}".format(test_mcc / len(test_data_PECAN)))
-                # print("Ab test AUROC:{}".format(ab_test_auroc / len(test_data_PECAN)))
-                # print("Ab test AUPRC:{}".format(ab_test_auprc / len(test_data_PECAN)))
-                # print("Ab test MCC:{}".format(ab_test_mcc / len(test_data_PECAN)))
-                print("==========================================================================")
-                print("Ag test AUROC:{}".format(test_auprc_ag))
-                print("Ag test AUPRC:{}".format(test_auroc_ag))
-                print("Ag test MCC:{}".format(test_mcc_ag))
-                print("Ab test AUROC:{}".format(test_auprc_ab))
-                print("Ab test AUPRC:{}".format(test_auroc_ab))
-                print("Ab test MCC:{}".format(test_mcc_ab))
