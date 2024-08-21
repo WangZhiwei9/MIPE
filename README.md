@@ -41,7 +41,7 @@ python main.py
 ```
 
 ## License
-DeepInterAware content and derivates are licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+MIPE content and derivates are licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
 
 ## Cite Us
 Feel free to cite this work if you find it useful to you!
